@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PriMoRetarget: Humanoid Motion Transfer Through Prioritized Motion Retargeting</title>
+  <meta name="description" content="PriMoRetarget is a motion-retargeting framework that uses prioritized optimization to transfer human motion to humanoid robots.">
+
+  <meta property="og:title" content="PriMoRetarget: Humanoid Motion Transfer Through Prioritized Motion Retargeting">
+  <meta property="og:description" content="PriMoRetarget is a motion-retargeting framework that uses prioritized optimization to transfer human motion to humanoid robots.">
+  <meta property="og:type" content="website">
+
+  <meta property="og:image" content="static/images/preview.jpg">
+  <meta property="og:image:width" content="1920">
+  <meta property="og:image:height" content="1080">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+</head>
+<body>
+
+<!-- Title -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop has-text-centered">
+      <h1 class="title is-1 publication-title">PriMoRetarget</h1>
+      <h2 class="subtitle is-3 publication-subtitle">Humanoid Motion Transfer Through Prioritized Motion Retargeting</h2>
+
+      <div class="is-size-5 publication-authors">
+        <span class="author-block">Nicholas Ioannidis<sup>*,1</sup>,</span>
+        <span class="author-block">Dun Yang<sup>*,1</sup>,</span>
+        <span class="author-block">Max Smith<sup>2</sup>,</span>
+        <span class="author-block">Tue Vu<sup>2</sup>,</span>
+        <span class="author-block">Ziyu Zhang<sup>1</sup>,</span>
+        <span class="author-block">Shayegan Omidshafiei<sup>2</sup>,</span>
+        <span class="author-block">Xue Bin Peng<sup>1,3,4</sup></span>
+      </div>
+      <div class="is-size-5 publication-authors affiliations">
+        <span class="author-block"><sup>1</sup>Simon Fraser University,</span>
+        <span class="author-block"><sup>2</sup>FieldAI,</span>
+        <span class="author-block"><sup>3</sup>NVIDIA,</span>
+        <span class="author-block"><sup>4</sup>Amii</span>
+      </div>
+      <div class="equal-contribution"><sup>*</sup>Joint first authors</div>
+
+      <div class="publication-links">
+        <a class="button is-dark is-rounded" href="#" target="_blank" rel="noopener">
+          <span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span>
+        </a>
+        <a class="button is-dark is-rounded" href="#video">
+          <span class="icon"><i class="fab fa-youtube"></i></span><span>Video</span>
+        </a>
+        <span class="button is-dark is-rounded" disabled title="Code will be released soon">
+          <span class="icon"><i class="fab fa-github"></i></span><span>Code (coming soon)</span>
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Video -->
+
+<section class="section video-section" id="video">
+  <div class="container is-max-desktop">
+    <div class="video-frame">
+      <iframe src="https://www.youtube-nocookie.com/embed/UQ4LITWydbc?rel=0"
+              title="PriMoRetarget video"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- TL;DR -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">TL;DR</h2>
+    <div class="content">
+      <p class="abstract">
+        <strong>PriMoRetarget</strong> is a motion-retargeting framework for transferring human motion
+        to humanoid robots. Rather than balancing competing objectives with manually tuned weights,
+        <strong>PriMoRetarget</strong> uses an explicit hierarchy between objectives to preserve critical characteristics such
+        as foot placement and interaction contacts while optimizing remaining objectives of lower priority.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Method -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Method</h2>
+
+    <div class="content method-problem">
+      <p>
+        Unlike weighted-sum approaches that assign weights to each objective to denote its
+        relative importance,
+      </p>
+      <div class="math-row">
+        <span class="math">\displaystyle x^{\star} = \operatorname*{arg\,min}_{x} \sum_{k=1}^{K} w^{k} L^{k}(x),</span>
+      </div>
+      <p>
+        <strong>PriMoRetarget</strong> optimizes each objective <span class="math">L^k</span>
+        over the motions <span class="math">S^{k-1}</span> that preserve all higher-priority
+        objectives:
+      </p>
+      <div class="math-row">
+        <span class="math">\displaystyle x_k^{\star} \in \operatorname*{arg\,min}_{x \in S^{k-1}} L^{k}(x),</span>
+      </div>
+      <p>and the remaining set of motions becomes</p>
+      <div class="math-row">
+        <span class="math">\displaystyle S^{k} = \left\{\, x \in S^{k-1} \;\middle|\; L^{k}(x) = L^{k}(x_k^{\star}) \,\right\}.</span>
+      </div>
+    </div>
+
+    
+    <div class="algorithm-video">
+      <video class="lazy-video" poster="static/videos/algorithm.jpg" muted loop playsinline preload="none"
+             aria-label="Animation of one iteration of prioritized optimization: each objective's gradient is projected onto the null space of the higher priorities, accumulated into g_total, and x takes a step.">
+        <source src="static/videos/algorithm.mp4" type="video/mp4"></video>
+    </div>
+
+    <div class="content method-lead">
+      <p>
+        This is enforced by projecting each gradient update onto the Nullspace of the Jacobians
+        <span class="math">\mathbf{J}</span> of the higher-priority objectives.
+      </p>
+    </div>
+
+    <div class="demo-pair">
+      <div class="demo-video demo-a">
+        <video class="lazy-video" poster="static/videos/toy_example.jpg" muted loop playsinline preload="none">
+          <source src="static/videos/toy_example.mp4" type="video/mp4"></video>
+      </div>
+      <p class="demo-cap demo-a">
+        Illustration of <strong>weighted-sum</strong> vs.
+        <strong class="prioritized">prioritized optimization</strong> for two quadratic objectives.
+        The <strong>weighted sum</strong> settles on a compromise, while the
+        <strong class="prioritized">prioritized update</strong> satisfies the higher-priority
+        objective (<strong class="red-line">red line</strong>) and improves the other objective only along its free directions.
+      </p>
+
+      <div class="demo-video demo-b">
+        <video class="lazy-video" poster="static/videos/box_example.jpg" muted loop playsinline preload="none">
+          <source src="static/videos/box_example.mp4" type="video/mp4"></video>
+      </div>
+      <p class="demo-cap demo-b">
+        <strong>Illustration of conflicting objectives in motion retargeting.</strong> The source pose remains fixed
+        while the box is synthetically moved throughout the motion.
+        <strong class="ours">PriMoRetarget</strong> prioritizes the hand contacts, adapting the
+        hands to follow the box while allowing some pose tracking error. In contrast,
+        <strong class="gmr">GMR</strong> compromises between the competing objectives, resulting
+        in neither accurate pose tracking nor consistent hand contacts.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Results -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Results</h2>
+
+    <div class="content has-text-justified">
+      <p>
+        We evaluate <strong>PriMoRetarget</strong> against existing retargeting methods across
+        different interaction settings. The resulting retargeted motions are used as references for
+        a tracking policy, and selected motions are deployed on a Unitree G1 humanoid robot.
+      </p>
+    </div>
+    <div class="method-legend">
+      <span><i class="dot source"></i>Source</span>
+      <span><i class="dot ours"></i>Ours</span>
+      <span><i class="dot gmr"></i>GMR</span>
+      <span><i class="dot omni"></i>OmniRetarget</span>
+      <span><i class="dot phc"></i>PHC</span>
+    </div>
+    <div class="tab-group">
+      <div class="tabs is-centered is-toggle is-small">
+        <ul>
+          <li class="is-active" data-tab="b-lafan"><a>LAFAN1</a></li>
+          <li data-tab="b-omomo"><a>OMOMO</a></li>
+          <li data-tab="b-interx"><a>Inter-X</a></li>
+          <li data-tab="b-inhouse"><a>In-house</a></li>
+        </ul>
+      </div>
+      <div class="tab-pane is-active" id="b-lafan">
+        <video class="lazy-video" poster="static/videos/baseline_lafan.jpg" muted loop playsinline preload="none">
+          <source src="static/videos/baseline_lafan.mp4" type="video/mp4"></video>
+      </div>
+      <div class="tab-pane" id="b-omomo">
+        <video class="lazy-video" poster="static/videos/baseline_omomo.jpg" muted loop playsinline preload="none">
+          <source src="static/videos/baseline_omomo.mp4" type="video/mp4"></video>
+      </div>
+      <div class="tab-pane" id="b-interx">
+        <video class="lazy-video" poster="static/videos/baseline_interx.jpg" muted loop playsinline preload="none">
+          <source src="static/videos/baseline_interx.mp4" type="video/mp4"></video>
+      </div>
+      <div class="tab-pane" id="b-inhouse">
+        <video class="lazy-video" poster="static/videos/baseline_inhouse.jpg" muted loop playsinline preload="none">
+          <source src="static/videos/baseline_inhouse.mp4" type="video/mp4"></video>
+      </div>
+    </div>
+
+    <h3 class="title is-4 results-heading">Tracking Policies</h3>
+    <div class="tab-group">
+      <div class="tabs is-centered is-toggle is-small">
+        <ul>
+          <li class="is-active" data-tab="r-lafan"><a>LAFAN1</a></li>
+          <li data-tab="r-omomo"><a>OMOMO</a></li>
+          <li data-tab="r-interx"><a>Inter-X</a></li>
+          <li data-tab="r-inhouse"><a>In-house</a></li>
+        </ul>
+      </div>
+      <div class="tab-pane is-active" id="r-lafan">
+        <video class="lazy-video" poster="static/videos/rl_lafan.jpg" muted loop playsinline preload="none">
+          <source src="static/videos/rl_lafan.mp4" type="video/mp4"></video>
+      </div>
+      <div class="tab-pane" id="r-omomo">
+        <video class="lazy-video" poster="static/videos/rl_omomo.jpg" muted loop playsinline preload="none">
+          <source src="static/videos/rl_omomo.mp4" type="video/mp4"></video>
+      </div>
+      <div class="tab-pane" id="r-interx">
+        <video class="lazy-video" poster="static/videos/rl_interx.jpg" muted loop playsinline preload="none">
+          <source src="static/videos/rl_interx.mp4" type="video/mp4"></video>
+      </div>
+      <div class="tab-pane" id="r-inhouse">
+        <video class="lazy-video" poster="static/videos/rl_inhouse.jpg" muted loop playsinline preload="none">
+          <source src="static/videos/rl_inhouse.mp4" type="video/mp4"></video>
+      </div>
+    </div>
+
+    
+    <h3 class="title is-4 results-heading">Robot Deployment</h3>
+    <div class="deploy-grid">
+      <video class="lazy-video" poster="static/videos/deploy_1.jpg" muted loop playsinline preload="none">
+        <source src="static/videos/deploy_1.mp4" type="video/mp4"></video>
+      <video class="lazy-video" poster="static/videos/deploy_2.jpg" muted loop playsinline preload="none">
+        <source src="static/videos/deploy_2.mp4" type="video/mp4"></video>
+      <video class="lazy-video" poster="static/videos/deploy_3.jpg" muted loop playsinline preload="none">
+        <source src="static/videos/deploy_3.mp4" type="video/mp4"></video>
+      <video class="lazy-video" poster="static/videos/deploy_4.jpg" muted loop playsinline preload="none">
+        <source src="static/videos/deploy_4.mp4" type="video/mp4"></video>
+    </div>
+  </div>
+</section>
+
+<!-- BibTeX -->
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">BibTeX</h2>
+    <div class="bibtex-box">
+      <button class="button is-small copy-bibtex" type="button">
+        <span class="icon"><i class="far fa-copy"></i></span><span>Copy</span>
+      </button>
+      <pre><code id="bibtex">@article{ioannidis2026primoretarget,
+  title   = {PriMoRetarget: Humanoid Motion Transfer Through Prioritized Motion Retargeting},
+  author  = {Ioannidis, Nicholas and Yang, Dun and Smith, Max and Vu, Tue and
+             Zhang, Ziyu and Omidshafiei, Shayegan and Peng, Xue Bin},
+  journal = {arXiv preprint arXiv:XXXX.XXXXX},
+  year    = {2026}
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container is-max-desktop has-text-centered">
+    <p class="is-size-7">
+      Page layout follows the <a href="https://github.com/nerfies/nerfies.github.io" target="_blank" rel="noopener">Nerfies</a>
+      project page template, used under
+      <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>.
+    </p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script>
+<script src="static/js/index.js"></script>
+</body>
+</html>
